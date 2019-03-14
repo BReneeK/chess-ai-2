@@ -13,15 +13,15 @@ var randomMove = function() {
  * @param {string} color - Players color, either 'b' or 'w'
  * @return {Number} board value relative to player
  */
-var evaluateBoard = function(board, color) {
+var evaluateBoard_1 = function(board, color) {
   // Sets the value for each piece using standard piece value
   var pieceValue = {
-    'p': 100,
-    'n': 350,
-    'b': 350,
-    'r': 525,
-    'q': 1000,
-    'k': 10000
+    'p': 10,
+    'n': 30,
+    'b': 30,
+    'r': 50,
+    'q': 90,
+    'k': 900
   };
 
   // Loop through all pieces on the board and sum up total
@@ -38,6 +38,145 @@ var evaluateBoard = function(board, color) {
 
   return value;
 };
+
+// From Lauri Hartikka's Simple Chess AI
+// ---------------------------------------------------------
+
+var reverseArray = function(array) {
+    return array.slice().reverse();
+};
+
+var pawnEvalWhite =
+[
+	[0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0],
+	[5.0,  5.0,  5.0,  5.0,  5.0,  5.0,  5.0,  5.0],
+	[1.0,  1.0,  2.0,  3.0,  3.0,  2.0,  1.0,  1.0],
+	[0.5,  0.5,  1.0,  2.5,  2.5,  1.0,  0.5,  0.5],
+	[0.0,  0.0,  0.0,  2.0,  2.0,  0.0,  0.0,  0.0],
+	[0.5, -0.5, -1.0,  0.0,  0.0, -1.0, -0.5,  0.5],
+	[0.5,  1.0, 1.0,  -2.0, -2.0,  1.0,  1.0,  0.5],
+	[0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0]
+];
+
+var pawnEvalBlack = reverseArray(pawnEvalWhite);
+
+var knightEval =
+[
+	[-5.0, -4.0, -3.0, -3.0, -3.0, -3.0, -4.0, -5.0],
+	[-4.0, -2.0,  0.0,  0.0,  0.0,  0.0, -2.0, -4.0],
+	[-3.0,  0.0,  1.0,  1.5,  1.5,  1.0,  0.0, -3.0],
+	[-3.0,  0.5,  1.5,  2.0,  2.0,  1.5,  0.5, -3.0],
+	[-3.0,  0.0,  1.5,  2.0,  2.0,  1.5,  0.0, -3.0],
+	[-3.0,  0.5,  1.0,  1.5,  1.5,  1.0,  0.5, -3.0],
+	[-4.0, -2.0,  0.0,  0.5,  0.5,  0.0, -2.0, -4.0],
+	[-5.0, -4.0, -3.0, -3.0, -3.0, -3.0, -4.0, -5.0]
+];
+
+var bishopEvalWhite = 
+[
+	[ -2.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -2.0],
+	[ -1.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0, -1.0],
+	[ -1.0,  0.0,  0.5,  1.0,  1.0,  0.5,  0.0, -1.0],
+	[ -1.0,  0.5,  0.5,  1.0,  1.0,  0.5,  0.5, -1.0],
+	[ -1.0,  0.0,  1.0,  1.0,  1.0,  1.0,  0.0, -1.0],
+	[ -1.0,  1.0,  1.0,  1.0,  1.0,  1.0,  1.0, -1.0],
+	[ -1.0,  0.5,  0.0,  0.0,  0.0,  0.0,  0.5, -1.0],
+	[ -2.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -2.0]
+];
+
+var bishopEvalBlack = reverseArray(bishopEvalWhite);
+
+var rookEvalWhite = 
+[
+	[  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0],
+	[  0.5,  1.0,  1.0,  1.0,  1.0,  1.0,  1.0,  0.5],
+	[ -0.5,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0, -0.5],
+	[ -0.5,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0, -0.5],
+	[ -0.5,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0, -0.5],
+	[ -0.5,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0, -0.5],
+	[ -0.5,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0, -0.5],
+	[  0.0,   0.0, 0.0,  0.5,  0.5,  0.0,  0.0,  0.0]
+];
+
+var rookEvalBlack = reverseArray(rookEvalWhite);
+
+var evalQueen = 
+[
+	[ -2.0, -1.0, -1.0, -0.5, -0.5, -1.0, -1.0, -2.0],
+	[ -1.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0, -1.0],
+	[ -1.0,  0.0,  0.5,  0.5,  0.5,  0.5,  0.0, -1.0],
+	[ -0.5,  0.0,  0.5,  0.5,  0.5,  0.5,  0.0, -0.5],
+	[  0.0,  0.0,  0.5,  0.5,  0.5,  0.5,  0.0, -0.5],
+	[ -1.0,  0.5,  0.5,  0.5,  0.5,  0.5,  0.0, -1.0],
+	[ -1.0,  0.0,  0.5,  0.0,  0.0,  0.0,  0.0, -1.0],
+	[ -2.0, -1.0, -1.0, -0.5, -0.5, -1.0, -1.0, -2.0]
+];
+
+var kingEvalWhite = 
+[
+	[ -3.0, -4.0, -4.0, -5.0, -5.0, -4.0, -4.0, -3.0],
+	[ -3.0, -4.0, -4.0, -5.0, -5.0, -4.0, -4.0, -3.0],
+	[ -3.0, -4.0, -4.0, -5.0, -5.0, -4.0, -4.0, -3.0],
+	[ -3.0, -4.0, -4.0, -5.0, -5.0, -4.0, -4.0, -3.0],
+	[ -2.0, -3.0, -3.0, -4.0, -4.0, -3.0, -3.0, -2.0],
+	[ -1.0, -2.0, -2.0, -2.0, -2.0, -2.0, -2.0, -1.0],
+	[  2.0,  2.0,  0.0,  0.0,  0.0,  0.0,  2.0,  2.0 ],
+	[  2.0,  3.0,  1.0,  0.0,  0.0,  1.0,  3.0,  2.0 ]
+];
+
+var kingEvalBlack = reverseArray(kingEvalWhite);
+
+/**
+// returns the calculated value of the peice taking into account location on the board
+// @param {object} piece - chess peice we are looking at
+// @param {number} x y - coordinates of of the board where the piece is located
+*/
+var getPieceValue = function (piece, x, y) {
+    if (piece === null) {
+        return 0;
+    }
+    var getAbsoluteValue = function (piece, isWhite, x ,y) {
+        if (piece.type === 'p') {
+            return 10 + ( isWhite ? pawnEvalWhite[y][x] : pawnEvalBlack[y][x] );
+        } else if (piece.type === 'r') {
+            return 50 + ( isWhite ? rookEvalWhite[y][x] : rookEvalBlack[y][x] );
+        } else if (piece.type === 'n') {
+            return 30 + knightEval[y][x];
+        } else if (piece.type === 'b') {
+            return 30 + ( isWhite ? bishopEvalWhite[y][x] : bishopEvalBlack[y][x] );
+        } else if (piece.type === 'q') {
+            return 90 + evalQueen[y][x];
+        } else if (piece.type === 'k') {
+            return 900 + ( isWhite ? kingEvalWhite[y][x] : kingEvalBlack[y][x] );
+        }
+        throw "Unknown piece type: " + piece.type;
+    };
+
+    var absoluteValue = getAbsoluteValue(piece, piece.color === 'w', x ,y);
+    return piece.color === 'w' ? absoluteValue : -absoluteValue;
+};
+
+
+/**
+* Evaluates current chess board relative to player
+* @param {string} color - Players color, either 'b' or 'w'
+* @return {Number} board value relative to player
+*/
+var evaluateBoard_2 = function(board, color) {
+    var totalEvaluation = 0;
+    for (var i = 0; i < 8; i++) {
+        for (var j = 0; j < 8; j++) {
+		if (board[i][j] != null){
+            		totalEvaluation += getPieceValue(board[i][j], i ,j) 
+			* (board[i][j]['color'] === color ? 1 : -1);
+		}	
+        }
+    }
+    return totalEvaluation;
+};
+
+
+// -------------------------------------------------------------
 
 /**
  * Calculates the best move looking one move ahead
@@ -58,7 +197,7 @@ var calcBestMoveOne = function(playerColor) {
   var bestMoveValue = Number.NEGATIVE_INFINITY;
   possibleMoves.forEach(function(move) {
     game.move(move);
-    var moveValue = evaluateBoard(game.board(), playerColor);
+    var moveValue = evaluateBoard_1(game.board(), playerColor);
     if (moveValue > bestMoveValue) {
       bestMoveSoFar = move;
       bestMoveValue = moveValue;
@@ -81,7 +220,7 @@ var calcBestMoveNoAB = function(depth, game, playerColor,
                                 isMaximizingPlayer=true) {
   // Base case: evaluate board
   if (depth === 0) {
-    value = evaluateBoard(game.board(), playerColor);
+    value = evaluateBoard_1(game.board(), playerColor);
     return [value, null]
   }
 
@@ -142,7 +281,7 @@ var calcBestMove = function(depth, game, playerColor,
                             isMaximizingPlayer=true) {
   // Base case: evaluate board
   if (depth === 0) {
-    value = evaluateBoard(game.board(), playerColor);
+    value = evaluateBoard_2(game.board(), playerColor);
     return [value, null]
   }
 

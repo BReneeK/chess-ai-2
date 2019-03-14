@@ -1,5 +1,5 @@
 // Computer makes a move with algorithm choice and skill/depth level
-var makeMove = function(algo, skill=3) {
+var makeMove = function(algo, skill=1) {
   // exit if the game is over
   if (game.game_over() === true) {
     console.log('game over');
@@ -22,7 +22,7 @@ var makeMove = function(algo, skill=3) {
 }
 
 // Computer vs Computer
-var playGame = function(algo=4, skillW=2, skillB=2) {
+var playGame = function(algo=4, skillW=1, skillB=1) {
   if (game.game_over() === true) {
     console.log('game over');
     return;

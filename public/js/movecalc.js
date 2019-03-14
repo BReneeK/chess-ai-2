@@ -163,19 +163,134 @@ var getPieceValue = function (piece, x, y) {
 * @return {Number} board value relative to player
 */
 var evaluateBoard_2 = function(board, color) {
-    var totalEvaluation = 0;
-    for (var i = 0; i < 8; i++) {
-        for (var j = 0; j < 8; j++) {
-		if (board[i][j] != null){
-            		totalEvaluation += getPieceValue(board[i][j], i ,j) 
-			* (board[i][j]['color'] === color ? 1 : -1);
-		}	
-        }
+  var totalEvaluation = 0;
+  for (var i = 0; i < 8; i++) {
+    for (var j = 0; j < 8; j++) {
+		  if (board[i][j] != null){
+        totalEvaluation += getPieceValue(board[i][j], i ,j) * (board[i][j]['color'] === color ? 1 : -1);
+		  }	
     }
-    return totalEvaluation;
+  }
+  return totalEvaluation;
 };
 
 // -------------------------------------------------------------
+
+/* 
+* Modified Lauri Hartikka's eval function (eval2) with some evaluation changes concerning pawns
+* Heuristics used:
+    * Isolated pawns (with no friendly pieces around) are bad
+    * A passed pawn (pawn with no opposing pawns in front of it on either the same column or adjacent columns) is good
+    * Having all 8 pawns is kinda bad because it clutters the board
+*/
+var evaluateBoard_3 = function(board, color) {
+  var numPawns = 0;
+  var totalEvaluation = 0;
+  for (var r = 0; r < 8; r++) {
+    for (var c = 0; c < 8; c++) {
+
+      // Isolated Pawns: 4 edges
+      // row 0
+      if (r === 0 && c > 0 && c < 7 && board[r][c] != null && board[r][c].type === 'p'){
+        if (board[r][c].color === color){
+          numPawns++;
+        }
+        if ((board[r][c-1] === null || board[r][c-1].color != color) && (board[r][c+1] === null || board[r][c+1].color != color)
+           && (board[1][c] === null || board[1][c].color != color)){
+             totalEvaluation += (getPieceValue(board[r][c], r, c) - 1.0) * (board[r][c]['color'] === color ? 1 : -1);
+           }
+      }
+      // row 7
+      else if (r === 7 && c > 0 && c < 7 && board[r][c] != null && board[r][c].type === 'p'){
+        if (board[r][c].color === color){
+          numPawns++;
+        }
+        if ((board[r][c-1] === null || board[r][c-1].color != color) && (board[r][c+1] === null || board[r][c+1].color != color)
+           && (board[6][c] === null || board[6][c].color != color)){
+             totalEvaluation += (getPieceValue(board[r][c], r, c) - 1.0) * (board[r][c]['color'] === color ? 1 : -1);
+           }
+      }
+      // column 0
+      else if (c === 0 && r > 0 && r < 7 && board[r][c] != null && board[r][c].type === 'p'){
+        if (board[r][c].color === color){
+          numPawns++;
+        }
+        if ((board[r+1][c] === null || board[r+1][c].color != color) && (board[r-1][c] === null || board[r-1][c].color != color)
+           && (board[r][1] === null || board[r][1].color != color)){
+             totalEvaluation += (getPieceValue(board[r][c], r, c) - 1.0) * (board[r][c]['color'] === color ? 1 : -1);
+           }
+      }
+      // column 7
+      else if (c === 7 && r > 0 && r < 7 && board[r][c] != null && board[r][c].type === 'p'){
+        if (board[r][c].color === color){
+          numPawns++;
+        }
+        if ((board[r+1][c] === null || board[r+1][c].color != color) && (board[r-1][c] === null || board[r-1][c].color != color)
+           && (board[r][6] === null || board[r][6].color != color)){
+             totalEvaluation += (getPieceValue(board[r][c], r, c) - 1.0) * (board[r][c]['color'] === color ? 1 : -1);
+           }
+      }
+      // Isolated pawns: center board
+      else if (board[r][c] != null && board[r][c].type === 'p'){
+        if (board[r][c].color === color){
+          numPawns++;
+        }
+        if ((board[r+1][c] === null || board[r+1][c].color != color) && (board[r-1][c] === null || board[r-1][c].color != color)
+           && (board[r][c-1] === null || board[r][c-1].color != color) && (board[r][c+1] === null || board[r][c+1].color != color)){
+            totalEvaluation += (getPieceValue(board[r][c], r, c) - 1.0) * (board[r][c]['color'] === color ? 1 : -1);            
+        }
+      }
+      // everything else
+	    else if (board[r][c] != null){
+        totalEvaluation += getPieceValue(board[r][c], r ,c) * (board[r][c]['color'] === color ? 1 : -1);
+		  }	
+    }
+  }
+
+  // Isolated Pawns: 4 corners
+  // top left
+  if (board[0][0] != null && board[0][0].type === 'p'){
+    if (board[0][0].color === color){
+      numPawns++;
+    }
+    if ((board[1][0] === null || board[1][0].color != color) && (board[0][1] === null || board[0][1].color != color)){
+      totalEvalution += (getPieceValue(board[0][0], 0, 0) - 1.0) * (board[0][0]['color'] === color ? 1 : -1);
+    }
+  }
+  // top right
+  if (board[0][7] != null && board[0][7].type === 'p'){
+    if (board[0][7].color === color){
+      numPawns++;
+    }
+    if ((board[1][7] === null || board[1][7].color != color) && (board[0][6] === null || board[0][6].color != color)){
+      totalEvalution += (getPieceValue(board[0][7], 0, 7) - 1.0) * (board[0][7]['color'] === color ? 1 : -1);
+    }
+  }
+  // bottom left
+  if (board[7][0] != null && board[7][0].type === 'p'){
+    if (board[7][0].color === color){
+      numPawns++;
+    }
+    if ((board[6][0] === null || board[6][0].color != color) && (board[7][1] === null || board[7][1].color != color)){
+      totalEvalution += (getPieceValue(board[7][0], 7, 0) - 1.0) * (board[7][0]['color'] === color ? 1 : -1);
+    }
+  }
+  // bottom right
+  if (board[7][7] != null && board[7][7].type === 'p'){
+    if (board[7][7].color === color){
+      numPawns++;
+    }
+    if ((board[6][7] === null || board[6][7].color != color) && (board[7][6] === null || board[7][6].color != color)){
+      totalEvalution += (getPieceValue(board[7][7], 7, 7) - 1.0) * (board[7][7]['color'] === color ? 1 : -1);
+    }
+  }
+   
+  if (numPawns === 8){
+    totalEvaluation -= 80.0;
+  }
+
+  return totalEvaluation;
+};
 
 /**
  * Calculates the best move using Minimax with Alpha Beta Pruning.
@@ -191,13 +306,19 @@ var calcBestMove = function(depth, game, playerColor, eval,
                             alpha=Number.NEGATIVE_INFINITY,
                             beta=Number.POSITIVE_INFINITY,
                             isMaximizingPlayer=true) {
-  // Base case: evaluate board
+  // Base case: eval board w/ method 1
   if (depth === 0 && eval === 1) {
     value = evaluateBoard_1(game.board(), playerColor);
     return [value, null]
   }
+  // Base case: eval board w/ method 2
   else if (depth === 0 && eval === 2){
     value = evaluateBoard_2(game.board(), playerColor);
+    return [value, null]
+  }
+  // Base case: eval board w/ method 3
+  else if (depth === 0 && eval === 3){
+    value = evaluateBoard_3(game.board(), playerColor);
     return [value, null]
   }
 

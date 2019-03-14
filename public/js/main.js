@@ -1,8 +1,8 @@
 var start = function(){
 
-  console.log('Enter info as follows:\nplayGame(algo=4, skillW=(1,2,3), skillB=(1,2,3), evalW=(1,2), evalB=(1,2))');
+  console.log('Enter info as follows:\nplayGame(skillW=(1,2,3), skillB=(1,2,3), evalW=(1,2), evalB=(1,2))');
   return;
-}
+};
 
 // Computer makes a move with algorithm choice and skill/depth level
 var makeMove = function(skill=1, eval=1) {

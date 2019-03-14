@@ -180,20 +180,27 @@ var evaluateBoard_2 = function(board, color) {
 * Modified Lauri Hartikka's eval function (eval2) with some evaluation changes concerning pawns
 * Heuristics used:
     * Isolated pawns (with no friendly pieces around) are bad
-    * A passed pawn (pawn with no opposing pawns in front of it on either the same column or adjacent columns) is good
+    * Doubled pawns (2 pawns of same color on same file) are bad
     * Having all 8 pawns is kinda bad because it clutters the board
 */
 var evaluateBoard_3 = function(board, color) {
   var numPawns = 0;
+  var numWPieces = 0;
+  var numBPieces = 0;
   var totalEvaluation = 0;
   for (var r = 0; r < 8; r++) {
     for (var c = 0; c < 8; c++) {
-
       // Isolated Pawns: 4 edges
       // row 0
       if (r === 0 && c > 0 && c < 7 && board[r][c] != null && board[r][c].type === 'p'){
         if (board[r][c].color === color){
           numPawns++;
+        }
+        if (board[r][c].color === 'w'){
+          numWPieces++;
+        }
+        else if (board[r][c].color === 'b'){
+          numBPieces++;
         }
         if ((board[r][c-1] === null || board[r][c-1].color != color) && (board[r][c+1] === null || board[r][c+1].color != color)
            && (board[1][c] === null || board[1][c].color != color)){
@@ -205,6 +212,12 @@ var evaluateBoard_3 = function(board, color) {
         if (board[r][c].color === color){
           numPawns++;
         }
+        if (board[r][c].color === 'w'){
+          numWPieces++;
+        }
+        else if (board[r][c].color === 'b'){
+          numBPieces++;
+        }
         if ((board[r][c-1] === null || board[r][c-1].color != color) && (board[r][c+1] === null || board[r][c+1].color != color)
            && (board[6][c] === null || board[6][c].color != color)){
              totalEvaluation += (getPieceValue(board[r][c], r, c) - 1.0) * (board[r][c]['color'] === color ? 1 : -1);
@@ -214,6 +227,12 @@ var evaluateBoard_3 = function(board, color) {
       else if (c === 0 && r > 0 && r < 7 && board[r][c] != null && board[r][c].type === 'p'){
         if (board[r][c].color === color){
           numPawns++;
+        }
+        if (board[r][c].color === 'w'){
+          numWPieces++;
+        }
+        else if (board[r][c].color === 'b'){
+          numBPieces++;
         }
         if ((board[r+1][c] === null || board[r+1][c].color != color) && (board[r-1][c] === null || board[r-1][c].color != color)
            && (board[r][1] === null || board[r][1].color != color)){
@@ -225,6 +244,12 @@ var evaluateBoard_3 = function(board, color) {
         if (board[r][c].color === color){
           numPawns++;
         }
+        if (board[r][c].color === 'w'){
+          numWPieces++;
+        }
+        else if (board[r][c].color === 'b'){
+          numBPieces++;
+        }
         if ((board[r+1][c] === null || board[r+1][c].color != color) && (board[r-1][c] === null || board[r-1][c].color != color)
            && (board[r][6] === null || board[r][6].color != color)){
              totalEvaluation += (getPieceValue(board[r][c], r, c) - 1.0) * (board[r][c]['color'] === color ? 1 : -1);
@@ -235,13 +260,25 @@ var evaluateBoard_3 = function(board, color) {
         if (board[r][c].color === color){
           numPawns++;
         }
+        if (board[r][c].color === 'w'){
+          numWPieces++;
+        }
+        else if (board[r][c].color === 'b'){
+          numBPieces++;
+        }
         if ((board[r+1][c] === null || board[r+1][c].color != color) && (board[r-1][c] === null || board[r-1][c].color != color)
            && (board[r][c-1] === null || board[r][c-1].color != color) && (board[r][c+1] === null || board[r][c+1].color != color)){
             totalEvaluation += (getPieceValue(board[r][c], r, c) - 1.0) * (board[r][c]['color'] === color ? 1 : -1);            
         }
       }
       // everything else
-	    else if (board[r][c] != null){
+	    else if (board[r][c] != null && board[r][c].type != 'p'){
+        if (board[r][c].color === 'w'){
+          numWPieces++;
+        }
+        else if (board[r][c].color === 'b'){
+          numBPieces++;
+        }
         totalEvaluation += getPieceValue(board[r][c], r ,c) * (board[r][c]['color'] === color ? 1 : -1);
 		  }	
     }
@@ -253,6 +290,12 @@ var evaluateBoard_3 = function(board, color) {
     if (board[0][0].color === color){
       numPawns++;
     }
+    if (board[0][0].color === 'w'){
+      numWPieces++;
+    }
+    else if (board[0][0].color === 'b'){
+      numBPieces++;
+    }
     if ((board[1][0] === null || board[1][0].color != color) && (board[0][1] === null || board[0][1].color != color)){
       totalEvalution += (getPieceValue(board[0][0], 0, 0) - 1.0) * (board[0][0]['color'] === color ? 1 : -1);
     }
@@ -261,6 +304,12 @@ var evaluateBoard_3 = function(board, color) {
   if (board[0][7] != null && board[0][7].type === 'p'){
     if (board[0][7].color === color){
       numPawns++;
+    }
+    if (board[0][7].color === 'w'){
+      numWPieces++;
+    }
+    else if (board[0][7].color === 'b'){
+      numBPieces++;
     }
     if ((board[1][7] === null || board[1][7].color != color) && (board[0][6] === null || board[0][6].color != color)){
       totalEvalution += (getPieceValue(board[0][7], 0, 7) - 1.0) * (board[0][7]['color'] === color ? 1 : -1);
@@ -271,6 +320,12 @@ var evaluateBoard_3 = function(board, color) {
     if (board[7][0].color === color){
       numPawns++;
     }
+    if (board[7][0].color === 'w'){
+      numWPieces++;
+    }
+    else if (board[7][0].color === 'b'){
+      numBPieces++;
+    }
     if ((board[6][0] === null || board[6][0].color != color) && (board[7][1] === null || board[7][1].color != color)){
       totalEvalution += (getPieceValue(board[7][0], 7, 0) - 1.0) * (board[7][0]['color'] === color ? 1 : -1);
     }
@@ -280,14 +335,37 @@ var evaluateBoard_3 = function(board, color) {
     if (board[7][7].color === color){
       numPawns++;
     }
+    if (board[7][7].color === 'w'){
+      numWPieces++;
+    }
+    else if (board[7][7].color === 'b'){
+      numBPieces++;
+    }
     if ((board[6][7] === null || board[6][7].color != color) && (board[7][6] === null || board[7][6].color != color)){
       totalEvalution += (getPieceValue(board[7][7], 7, 7) - 1.0) * (board[7][7]['color'] === color ? 1 : -1);
     }
   }
-   
+
   if (numPawns === 8){
-    totalEvaluation -= 80.0;
+    totalEvaluation -= 80.0; // base worth of a pawn is 10; 8 pawns * 10 = 80
   }
+
+  /*if(numWPieces > numBPieces){
+    if (color === 'w'){
+      totalEvaluation += 50.0; // arbitrary amount
+    }
+    else if (color === 'b'){
+      totalEvaluation -= 50.0;
+    }
+  }
+  else if (numWPieces < numBPieces){
+    if (color === 'w'){
+      totalEvaluation -= 50.0;
+    }
+    else if (color === 'b'){
+      totalEvaluation += 50.0;
+    }
+  }*/
 
   return totalEvaluation;
 };

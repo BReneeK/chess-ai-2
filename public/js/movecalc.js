@@ -187,9 +187,41 @@ var evaluateBoard_3 = function(board, color) {
   var numPawns = 0;
   var numWPieces = 0;
   var numBPieces = 0;
-  var totalEvaluation = 0;
+    var totalEvaluation = 0;
+    var r_temp = -1;
+    var double_pawn = false;
   for (var r = 0; r < 8; r++) {
-    for (var c = 0; c < 8; c++) {
+      for (var c = 0; c < 8; c++) {
+
+	  // Double Pawns
+
+	  if (board[r][c] != null && board[r][c].type === 'p'){
+    
+	      double_pawn = false;
+
+	      if (color === 'b'){
+		  r_temp = -1;
+		  for (r_temp = r+1; r_temp <= 7; r_temp++){
+		      if (board[r_temp][c] != null && board[r_temp][c].type === 'p' && board[r_temp][c].color === color) {
+			  double_pawn = true;
+		      }
+		  }
+	      } else { // color ===  'w'
+		  r_temp = 10;
+		  for (r_temp = r-1; r_temp >= 0; r_temp--){
+		      if (board[r_temp][c] != null && board[r_temp][c].type === 'p' && board[r_temp][c].color === color) {
+			  double_pawn = true;
+		      }
+		  }
+	      }
+
+	      if (double_pawn === true){
+		  totalEvaluation -= (1.0 * (board[r][c]['color'] === color ? 1 : -1 )); 
+	      }
+	  }
+
+	      
+	  
       // Isolated Pawns: 4 edges
       // row 0
       if (r === 0 && c > 0 && c < 7 && board[r][c] != null && board[r][c].type === 'p'){
@@ -368,7 +400,7 @@ var evaluateBoard_3 = function(board, color) {
   }*/
 
   return totalEvaluation;
-};
+  };
 
 /**
  * Calculates the best move using Minimax with Alpha Beta Pruning.
